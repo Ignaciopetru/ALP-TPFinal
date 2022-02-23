@@ -1,0 +1,6 @@
+Fun Md = Od <Sd> Di
+Fun Mi = Oi <Si> Dd
+Var b = [1, 2, 3,4,5]
+Fun Int = Md Oi Mi Oi <Si Md Md Si Mi Mi> Dd Di Md
+Var c = Int b
+Var e = Mi c
