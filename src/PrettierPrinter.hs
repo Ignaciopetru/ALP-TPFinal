@@ -4,6 +4,7 @@ import Common
 import Data.List
 import qualified Data.Map               as M
 
+-- Definido en este punto para poder imprimirlo (es importado en eval.hs).
 type Env = (M.Map Nombre (Lista -> Lista), (M.Map Nombre [Integer]))
 
 instance Show Lista where
@@ -18,6 +19,7 @@ instance Show Lista where
   show (Variable a) = "Var " ++ a
   show (Funcion a ls) = a
 
+-- Se evalua la funcion en una lista para poder recorrerla e impimirla.
 showFun :: (Lista -> Lista) -> String
 showFun fun = intercalate " " (map (\x-> show x) (showFun' (fun (ListaNat []))))
 
@@ -36,20 +38,18 @@ showFun' (Funcion a ls) = showFun' ls ++ [(Funcion a (ListaNat []))]
 showIntegerList :: [Integer] -> String
 showIntegerList s = "[" ++ intercalate ", " (map (\x-> show x) s) ++ "]"
 
-printError :: Error -> String
-printError OperOverEmpty     = "Error: Funcion de lista aplicada sobre lista vacia (fuera de dominio de funcion)"
-printError (UndefVar v)      = "Warning: Variable " ++ v ++ " indefinida"
-printError (UndefFun v)      = "Warning: Funcion " ++ v ++ " indefinida"
-printError (UndefFunOrVar v) = "Warning: No se encontró funcion o variable definida: " ++ v
-printError OperOutOfDomain   = "No deberias haber llegado aca"
+showError :: Error -> String
+showError OperOverEmpty     = "\nError: Funcion de lista aplicada sobre lista vacia (fuera de dominio de funcion)\n"
+showError (UndefVar v)      = "\nWarning: Variable " ++ v ++ " indefinida\n"
+showError (UndefFun v)      = "\nWarning: Funcion " ++ v ++ " indefinida\n"
+showError (UndefFunOrVar v) = "\nWarning: No se encontró funcion o variable definida: " ++ v ++ "\n"
+showError RepOutDomain   = "\nError: Repetición aplicada a una lista de menos de 2 elementos\n"
 
-
-printFunVar :: PrintDef -> String
-printFunVar (OnlyFun fun) = showFun fun
-printFunVar (OnlyVar var) = showIntegerList var
-printFunVar (FunAndVar (fun, var)) = (showFun fun) ++ "\n" ++ (showIntegerList var)
+showFunVar :: PrintDef -> String
+showFunVar (OnlyFun fun) = showFun fun
+showFunVar (OnlyVar var) = showIntegerList var
+showFunVar (FunAndVar (fun, var)) = (showFun fun) ++ "\n" ++ (showIntegerList var)
 
 showEnv :: Env -> IO ()
 showEnv env = do putStr ("Funciones: \n" ++ (M.foldrWithKey (\k fun rest -> k ++ ": " ++ (showFun fun) ++ "\n" ++ rest) "" (fst env)) ++ "\n")
                  putStr ("Variables: \n" ++ (M.foldrWithKey (\k var rest -> k ++ ": " ++ (showIntegerList var) ++ "\n" ++ rest) "" (snd env)) ++ "\n")
- 

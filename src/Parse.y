@@ -8,7 +8,7 @@ import Data.List
 
 %name func 
 %tokentype { Token } 
-%error { parseError }
+%monad { E } { thenE } { returnE }
 
 %token
     Oi          { TOL }
@@ -29,12 +29,12 @@ import Data.List
     Funcion     { TFuncion }
     Variable    { TVariable }
     Print       { TPrint }
+    Error       { TError }
 
 %right '<' '>'
 %right Oi Od Si Sd Di Dd
 
 %%
-
 
 comm :: { Comm }
 comm : Funcion  Var '=' listaRep { Fun $2 $4 }
@@ -98,14 +98,13 @@ data Token =  TOR
             | TPrint
             | TVariable
             | TFuncion
+            -- Token que representa un error detectado en el parser.
+            | TError
 
             deriving (Show, Eq)
 
-parseError :: [Token] -> a
-parseError _ = error "Parse error"
-
-parseErrorCustom :: String -> a
-parseErrorCustom e = error e
+happyError :: [Token] -> E a
+happyError tokens = failE "Error de parseo\n"
 
 -- Main lexer
 lexerComm :: String -> [Token]
@@ -162,7 +161,7 @@ lexerListNat (']':cs) = TBracketR : lexerListNat cs
 lexerListNat (' ':cs) = lexerListNat cs
 lexerListNat (c:cs)
              | isDigit c = lexerNat (c:cs)
-             | otherwise = parseError []
+             | otherwise = [TError]
 
 lexerNat :: String -> [Token]
 lexerNat [] = []
@@ -185,5 +184,5 @@ lexerRep [] = []
 lexerRep cs@(c:cc) | '<' == c = TRepL : lexer' cc
                    | '>' == c = TRepR : lexer' cc
                    | isSpace c = lexer' cs
-                   | otherwise = parseErrorCustom ("Caracter no reconocido: " ++ [c])
+                   | otherwise = [TError]
 }

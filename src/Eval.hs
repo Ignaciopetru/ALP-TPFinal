@@ -14,11 +14,9 @@ import           Control.Monad                  ( liftM
                                                 , ap
                                                 )
 
-
 -- Entorno nulo
 initEnv :: Env
 initEnv = (M.empty, M.empty)
-
 
 newtype StateError a = StateError { runStateError :: Env -> (Either Error a, Env) }
 
@@ -32,7 +30,6 @@ instance Monad StateError where
 
 instance MonadError StateError where
   throw e = StateError (\s -> (Left e, s))
-
 
 instance MonadState StateError where
   lookforVar v = StateError (\s ->
@@ -75,30 +72,31 @@ evalComm (Fun name decl) = do updateFun name decl
 evalComm (Var name decl) = do lsE <- evalLista decl
                               updateVar name lsE
                               return ""
-evalComm (Print name) = do res <- lookfor name
-                           return (printFunVar res)                               
-   
+evalComm (Print name)    = do res <- lookfor name
+                           return (showFunVar res)                               
+
 evalLista :: (MonadState m, MonadError m) => Lista -> m [Integer]
-evalLista (ListaNat ls)  = do return ls
-evalLista (Ol ls)        = do lsE <- evalLista ls
+evalLista (ListaNat ls)     = do return ls
+evalLista (Ol ls)           = do lsE <- evalLista ls
                               return (0 : lsE)
-evalLista (Or ls)        = do lsE <- evalLista ls
+evalLista (Or ls)           = do lsE <- evalLista ls
                               return (lsE ++ [0])
-evalLista (Sl ls)        = do lsE <- evalLista ls
+evalLista (Sl ls)           = do lsE <- evalLista ls
                               if (lsE == []) then throw OperOverEmpty
                               else return (((head lsE) + 1) : (tail lsE))
-evalLista (Sr ls)        = do lsE <- evalLista ls
+evalLista (Sr ls)           = do lsE <- evalLista ls
                               if (lsE == []) then throw OperOverEmpty
                               else return (init lsE ++ [last lsE + 1]) 
-evalLista (Dl ls)        = do lsE <- evalLista ls
+evalLista (Dl ls)           = do lsE <- evalLista ls
                               if (lsE == []) then throw OperOverEmpty
                               else return (tail lsE)
-evalLista (Dr ls)        = do lsE <- evalLista ls
+evalLista (Dr ls)           = do lsE <- evalLista ls
                               if (lsE == []) then throw OperOverEmpty
                               else return (init lsE)
-evalLista (Rep fun ls)   = do lsE <- evalLista ls
-                              if ((last lsE) == (head lsE)) then return lsE
-                              else (evalLista (Rep (fun) (fun (ListaNat lsE))))
+evalLista (Rep fun ls)      = do lsE <- evalLista ls
+                              if length lsE < 2 then throw RepOutDomain
+                              else if ((last lsE) == (head lsE)) then return lsE
+                                   else (evalLista (Rep (fun) (fun (ListaNat lsE))))
 evalLista (Funcion name ls) = do fun <- lookforFun name 
                                  (evalLista (fun ls))
-evalLista (Variable name) = lookforVar name
+evalLista (Variable name)   = lookforVar name

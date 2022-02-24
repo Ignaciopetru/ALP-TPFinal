@@ -27,10 +27,6 @@ import           PrettierPrinter
 --- Interpreter
 ---------------------
 
-parseComm :: String -> Comm
-parseComm contents = func $ lexerComm contents
-
-
 main :: IO ()
 main = do args <- getArgs
           if args /= [] then
@@ -59,16 +55,15 @@ readFromConsol = runInputT defaultSettings (loop initEnv)
                  Just input ->
                    do case parseComm input of
                         Exit -> return ()
+                        (ParseError error) -> do outputStrLn error
+                                                 loop env
                         x    -> do case (eval x env) of
-                                    (Left err, env') -> do outputStrLn (printError err)
+                                    (Left err, env') -> do outputStrLn (showError err)
                                                            loop env'
                                     (Right s, env') ->  do case s of
                                                               "" -> do loop env'
                                                               ss -> do outputStrLn (ss)
                                                                        loop env'
-
-cleanLine :: String -> String
-cleanLine line = if last line == '\n' || last line == '\r' then init line else line
 
 readFromFile :: [String] -> Env -> IO ()
 readFromFile []     env = do putStr "Archivo parseado correctamente\n"
@@ -78,9 +73,19 @@ readFromFile (x:xs) env = case x of
                           -- Se elimina el \n, por eso init
                           line -> do case parseComm (cleanLine line) of
                                        Exit -> return ()
+                                       (ParseError error) -> do putStr error
+                                                                return ()
                                        x    -> do case (eval x env) of
-                                                   (Left err, env') -> do putStr (printError err)
+                                                   (Left err, env') -> do putStr (showError err)
                                                    (Right s, env') ->  do case s of
                                                                              "" -> readFromFile xs env'
                                                                              ss -> do putStr (ss)
                                                                                       readFromFile xs env'
+
+cleanLine :: String -> String
+cleanLine line = if last line == '\n' || last line == '\r' then init line else line
+
+parseComm :: String -> Comm
+parseComm contents = case func $ lexerComm contents of
+                       Okey ast -> ast
+                       Failed error -> ParseError error

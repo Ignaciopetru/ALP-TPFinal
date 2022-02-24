@@ -1,7 +1,7 @@
 module Common where
 import Data.List
 
-data Comm = Fun Nombre Funcion | Var Nombre Lista | Print Nombre | Exit
+data Comm = Fun Nombre Funcion | Var Nombre Lista | Print Nombre | ParseError String | Exit
 
 data Lista = ListaNat [Integer]
             | Sl Lista
@@ -16,9 +16,31 @@ data Lista = ListaNat [Integer]
 
 type Funcion = (Lista -> Lista)
 
+type Nombre = String
+
 -- Tipo utilizado para devolver del env la funcion / lista asociada a una variable.
 data PrintDef = OnlyFun Funcion | OnlyVar [Integer] | FunAndVar (Funcion, [Integer])
 
-data Error = OperOverEmpty | UndefVar Nombre | UndefFunOrVar Nombre | OperOutOfDomain | UndefFun Nombre deriving (Eq, Show)
+-- Errores de evaluacion.
+data Error = OperOverEmpty | UndefVar Nombre | UndefFunOrVar Nombre | RepOutDomain | UndefFun Nombre deriving (Eq, Show)
 
-type Nombre = String
+-- Errores de parseo.
+-- Monada de control de errores para Happy (ver documentacion happy).
+data E a = Okey a | Failed String
+
+thenE :: E a -> (a -> E b) -> E b
+thenE m k =
+    case m of
+      Okey a -> k a
+      Failed e -> Failed e
+
+returnE :: a -> E a
+returnE a = Okey a
+
+failE :: String -> E a
+failE err = Failed err
+
+catchE :: E a -> (String -> E a) -> E a
+catchE m k = case m of
+              Okey a -> Okey a
+              Failed e -> k e
