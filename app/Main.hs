@@ -72,7 +72,8 @@ readFromFile (x:xs) env = case x of
                           ""   -> readFromFile xs env
                           -- Se elimina el \n, por eso init
                           line -> do case parseComm (cleanLine line) of
-                                       Exit -> return ()
+                                       Exit -> do showEnv env
+                                                  return ()
                                        (ParseError error) -> do putStr error
                                                                 return ()
                                        x    -> do case (eval x env) of

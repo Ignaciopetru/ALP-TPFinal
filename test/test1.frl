@@ -1,10 +1,5 @@
-Fun Md = Od <Sd> Di
-Fun Mi = Oi <Si> Dd
-Fun Int = Md Oi Mi Oi <Si Md Md Si Mi Mi> Dd Di Md
-Fun DPi = Od <Sd>Mi
-Fun DPd = Oi <Si>Md
 Var b = [1, 2, 3,4,5]
-Var c = Int b
+Var c = INT b
 Var e = Mi c
-Var a = DPi b
-Var a = <Si> [1,2] fd
+Var a = DDi b
+Var d = <Si> [1,2]

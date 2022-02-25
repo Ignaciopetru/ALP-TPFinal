@@ -48,7 +48,7 @@ showError RepOutDomain   = "\nError: Repetición aplicada a una lista de menos d
 showFunVar :: PrintDef -> String
 showFunVar (OnlyFun fun) = showFun fun
 showFunVar (OnlyVar var) = showIntegerList var
-showFunVar (FunAndVar (fun, var)) = (showFun fun) ++ "\n" ++ (showIntegerList var)
+showFunVar (FunAndVar (fun, var)) = "Funcion: "++ (showFun fun) ++ "\nVariable: " ++ (showIntegerList var)
 
 showEnv :: Env -> IO ()
 showEnv env = do putStr ("Funciones: \n" ++ (M.foldrWithKey (\k fun rest -> k ++ ": " ++ (showFun fun) ++ "\n" ++ rest) "" (fst env)) ++ "\n")

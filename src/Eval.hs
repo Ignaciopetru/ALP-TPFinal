@@ -73,30 +73,36 @@ evalComm (Var name decl) = do lsE <- evalLista decl
                               updateVar name lsE
                               return ""
 evalComm (Print name)    = do res <- lookfor name
-                           return (showFunVar res)                               
+                              return (showFunVar res)                               
 
 evalLista :: (MonadState m, MonadError m) => Lista -> m [Integer]
 evalLista (ListaNat ls)     = do return ls
 evalLista (Ol ls)           = do lsE <- evalLista ls
-                              return (0 : lsE)
+                                 return (0 : lsE)
 evalLista (Or ls)           = do lsE <- evalLista ls
-                              return (lsE ++ [0])
+                                 return (lsE ++ [0])
 evalLista (Sl ls)           = do lsE <- evalLista ls
-                              if (lsE == []) then throw OperOverEmpty
-                              else return (((head lsE) + 1) : (tail lsE))
+                                 if (lsE == []) then throw OperOverEmpty
+                                 else return (((head lsE) + 1) : (tail lsE))
 evalLista (Sr ls)           = do lsE <- evalLista ls
-                              if (lsE == []) then throw OperOverEmpty
-                              else return (init lsE ++ [last lsE + 1]) 
+                                 if (lsE == []) then throw OperOverEmpty
+                                 else return (init lsE ++ [last lsE + 1]) 
 evalLista (Dl ls)           = do lsE <- evalLista ls
-                              if (lsE == []) then throw OperOverEmpty
-                              else return (tail lsE)
+                                 if (lsE == []) then throw OperOverEmpty
+                                 else return (tail lsE)
 evalLista (Dr ls)           = do lsE <- evalLista ls
-                              if (lsE == []) then throw OperOverEmpty
-                              else return (init lsE)
+                                 if (lsE == []) then throw OperOverEmpty
+                                 else return (init lsE)
+evalLista (Int ls)          = evalLista (Mr (Dl (Dr (Rep (\x ->  (Ml (Ml (Sl (Mr (Mr (Sl x))))))) (Ol (Ml (Ol (Mr ls))))))))
 evalLista (Rep fun ls)      = do lsE <- evalLista ls
-                              if length lsE < 2 then throw RepOutDomain
-                              else if ((last lsE) == (head lsE)) then return lsE
-                                   else (evalLista (Rep (fun) (fun (ListaNat lsE))))
+                                 if length lsE < 2 then throw RepOutDomain
+                                 else if ((last lsE) == (head lsE)) then return lsE
+                                        else (evalLista (Rep (fun) (fun (ListaNat lsE))))
+-- Funciones de lista derivadas de las atomicas. Se realiza traduccion al evaluar.
+evalLista (Ml ls)           = evalLista (Dr ((Rep (\x -> Sl x) (Ol ls))))
+evalLista (Mr ls)           = evalLista (Dl ((Rep (\x -> Sr x) (Or ls))))
+evalLista (DDl ls)          = evalLista (Ml ((Rep (\x -> Sr x) (Or ls))))
+evalLista (DDr ls)          = evalLista (Mr ((Rep (\x -> Sl x) (Ol ls))))
 evalLista (Funcion name ls) = do fun <- lookforFun name 
                                  (evalLista (fun ls))
 evalLista (Variable name)   = lookforVar name
