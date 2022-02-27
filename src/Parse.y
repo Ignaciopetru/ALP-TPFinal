@@ -91,11 +91,11 @@ listaRep :  Oi listaRep          { \x -> Ol ($2 x) }
          |  Sd                   { Sr }
          |  Di                   { Dl }
          |  Dd                   { Dr }
-         |  Mi lista             { Ml }
-         |  Md lista             { Mr }
-         |  DDi lista            { DDl }
-         |  DDd lista            { DDr }
-         |  Int lista            { Int }
+         |  Mi                   { Ml }
+         |  Md                   { Mr }
+         |  DDi                  { DDl }
+         |  DDd                  { DDr }
+         |  Int                  { Int }
          |  '<' listaRep '>'     { Rep (\x -> $2 x ) }
          |  Var                  { \x -> (Funcion $1 x) }
 
@@ -129,7 +129,8 @@ data Token =  TOR
             deriving (Show, Eq)
 
 happyError :: [Token] -> E a
-happyError tokens = failE "\nError de parseo\n"
+happyError tokens |  elem TError tokens = failE "\nError de parseo, caracter no reconocido\n"
+                  | otherwise = failE "\nError de parseo\n"
 
 -- Main lexer
 lexerComm :: String -> [Token]
@@ -140,7 +141,7 @@ lexerComm cs@(c:cc) | isSpace c = lexerComm cc
                                        ("Fun", rest) -> TFuncion : lexerFun rest
                                        ("Var", rest) -> TVariable : lexerVar rest
                                        ("Print", rest) -> TPrint : lexerVar rest
-                                       (v, rest) -> TVar v : lexerComm rest
+                                       otherwise -> [TError]
 
 -- lexerVar
 lexerVar :: String -> [Token]

@@ -80,8 +80,7 @@ readFromFile (x:xs) env = case x of
                                                    (Left err, env') -> do putStr (showError err)
                                                    (Right s, env') ->  do case s of
                                                                              "" -> readFromFile xs env'
-                                                                             ss -> do putStr (ss)
-                                                                                      readFromFile xs env'
+                                                                             ss -> do readFromFile xs env'
 
 cleanLine :: String -> String
 cleanLine line = if last line == '\n' || last line == '\r' then init line else line

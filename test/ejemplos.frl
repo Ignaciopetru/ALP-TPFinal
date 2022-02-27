@@ -1,0 +1,13 @@
+Fun predDer = Oi Oi Si <Di Si DDi Si> Di Dd Md
+Fun sumaizqPer = Md DDi DDd Oi <Di Si predDer Oi> Di Dd INT Mi
+Fun multIzqPer = Md DDd Oi Oi <Di sumaizqPer Md Di Mi predDer Oi> Di Dd INT Mi
+Fun expIzqPer = Md INT DDd DDi predDer Oi <Di predDer multIzqPer Md Di Mi Oi> Di Dd INT Md INT Mi Mi
+
+Var a = predDer [1,2,3]
+Var b = predDer [1,1]
+Var c = sumaizqPer [1,2]
+Var d = sumaizqPer [0,2, 1, 2]
+Var e = multIzqPer [2,3,4,5]
+Var f = multIzqPer [8,2,4,5]
+Var g = expIzqPer [2,3,1,2,3]
+Var h = expIzqPer [3,4,1,2,3]

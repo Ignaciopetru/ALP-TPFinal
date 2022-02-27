@@ -1,0 +1,6 @@
+Var b = [1, 2, 3,4,5]
+Var c = INT b
+Var e = Mi c
+Var a = DDi b
+Print a
+Var d = <Si> *[1,2]
