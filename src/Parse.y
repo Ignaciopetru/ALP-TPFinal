@@ -131,8 +131,8 @@ data Token =  TOR
             deriving (Show, Eq)
 
 happyError :: [Token] -> E a
-happyError tokens | elem TCarError tokens = failE "\nError de parseo, caracter no reconocido\n"
-                  | elem TCommError tokens = failE "\nComando no reconcido\n"
+happyError tokens | elem TCommError tokens = failE "\nComando no reconcido\n"
+                  | elem TCarError tokens = failE "\nError de parseo, caracter no reconocido o en posición erronea\n"
                   | otherwise = failE "\nError de parseo\n"
 
 -- Main lexer
@@ -140,7 +140,7 @@ lexerComm :: String -> [Token]
 lexerComm [] = []
 lexerComm cs@(c:cc) | isSpace c = lexerComm cc
                     | otherwise = case span isAlphaNum cs of
-                                       ("Exit", rest) -> [TExit]
+                                       ("Exit", rest) -> TExit : lexerFun rest
                                        ("Fun", rest) -> TFuncion : lexerFun rest
                                        ("Var", rest) -> TVariable : lexerVar rest
                                        ("Print", rest) -> TPrint : lexerVar rest

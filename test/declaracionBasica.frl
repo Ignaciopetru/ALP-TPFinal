@@ -1,0 +1,4 @@
+Var nombre = Si Si [1,2]
+Var lista = [1,2]
+Fun funcion1 = Si Si
+Var nombre2 = funcion1 lista
