@@ -34,7 +34,8 @@ import Data.List
     Funcion     { TFuncion }
     Variable    { TVariable }
     Print       { TPrint }
-    Error       { TError }
+    CError      { TCarError }
+    CommError   { TCommError }
 
 %right '<' '>'
 %right Oi Od Si Sd Di Dd
@@ -124,12 +125,14 @@ data Token =  TOR
             | TVariable
             | TFuncion
             -- Token que representa un error detectado en el parser.
-            | TError
+            | TCarError
+            | TCommError
 
             deriving (Show, Eq)
 
 happyError :: [Token] -> E a
-happyError tokens |  elem TError tokens = failE "\nError de parseo, caracter no reconocido\n"
+happyError tokens | elem TCarError tokens = failE "\nError de parseo, caracter no reconocido\n"
+                  | elem TCommError tokens = failE "\nComando no reconcido\n"
                   | otherwise = failE "\nError de parseo\n"
 
 -- Main lexer
@@ -141,21 +144,23 @@ lexerComm cs@(c:cc) | isSpace c = lexerComm cc
                                        ("Fun", rest) -> TFuncion : lexerFun rest
                                        ("Var", rest) -> TVariable : lexerVar rest
                                        ("Print", rest) -> TPrint : lexerVar rest
-                                       otherwise -> [TError]
+                                       otherwise -> [TCommError]
 
--- lexerVar
+-- lexer variable
 lexerVar :: String -> [Token]
 lexerVar [] = []
 lexerVar cs@(c:cc) | isSpace c = lexerVar cc
                    | c == '='  = TEqual : reverseVarList cc
                    | otherwise = case span isAlphaNum cs of
+                                       ("", rest) -> [TCarError]
                                        (v, rest) -> TVar v : lexerVar rest
--- lexerFun
+-- lexer funcion
 lexerFun :: String -> [Token]
 lexerFun [] = []
 lexerFun cs@(c:cc) | isSpace c = lexerFun cc
                    | c == '='  = TEqual : reverseFunList cc
                    | otherwise = case span isAlphaNum cs of
+                                       ("", rest) -> [TCarError]
                                        (v, rest) -> TVar v : lexerFun rest
 
 -- Da vuelta la lista del fst respetando <> y concatena
@@ -188,7 +193,7 @@ lexerListNat (' ':cs) = lexerListNat cs
 lexerListNat (c:cs)
              | isDigit c = lexerNat (c:cs)
              -- Se que hay algun otro digito en el comando este no es valido. Por lo tanto descarto el comando.
-             | otherwise = [TError]
+             | otherwise = [TCarError]
 
 lexerNat :: String -> [Token]
 lexerNat [] = []
@@ -212,7 +217,7 @@ lexerOper cs@(c:cc) | '<' == c = TRepL : lexer' cc
                                        ("DDi", rest) -> TDDL : lexer' rest
                                        ("DDd", rest) -> TDDR : lexer' rest
                                        ("INT", rest) -> TINT : lexer' rest
-                                       (var, rest)  -> if var == "" then lexerOper cs else (TVar var) : lexer' rest
-                                       otherwise -> [TError]
+                                       (var, rest)  -> if var == "" then [TCarError] else (TVar var) : lexer' rest
+                                       otherwise -> [TCarError]
 
 }

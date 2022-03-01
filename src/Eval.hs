@@ -45,12 +45,10 @@ instance MonadState StateError where
   lookfor v = StateError (\s ->
                 let x = M.lookup v (fst s)
                 in case x of
-                  Nothing      -> let x = M.lookup v (snd s)
-                                  in case x of
+                  Nothing      -> case M.lookup v (snd s) of
                                       Nothing      -> (Left (UndefFunOrVar v), s)
                                       Just varList -> (Right (OnlyVar varList), s)
-                  Just funList -> let x = M.lookup v (snd s)
-                                  in case x of
+                  Just funList -> case M.lookup v (snd s) of
                                       Nothing      -> (Right (OnlyFun funList), s)
                                       Just varList -> (Right (FunAndVar (funList, varList)), s))
   updateVar v i = StateError (\s -> (Right (), ((fst s), M.insert v i (snd s))))
@@ -73,7 +71,9 @@ evalComm (Var name decl) = do lsE <- evalLista decl
                               updateVar name lsE
                               return ""
 evalComm (Print name)    = do res <- lookfor name
-                              return (showFunVar res)                               
+                              return (showFunVar res)
+-- Nunca se deberia llegar a evaluarse un comando que no sea esos 3.
+evalComm _    = do return ""                              
 
 evalLista :: (MonadState m, MonadError m) => Lista -> m [Integer]
 evalLista (ListaNat ls)     = do return ls

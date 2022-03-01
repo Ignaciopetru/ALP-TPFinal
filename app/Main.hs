@@ -1,22 +1,11 @@
 module Main where
 
-import           Control.Exception              ( catch
-                                                , IOException
-                                                )
 import           Control.Monad.Except
-import           Data.Char
 import           Data.List
 import           Data.Maybe
 import           Prelude                 hiding ( print )
 import           System.Console.Haskeline
-import qualified Control.Monad.Catch           as MC
 import           System.Environment
-import           System.IO               hiding ( print )
-import           Text.PrettyPrint.HughesPJ      ( render
-                                                , text
-                                                )
-import qualified Data.Map.Strict               as M
-
 
 import           Common
 import           Parse
@@ -55,8 +44,8 @@ readFromConsol = runInputT defaultSettings (loop initEnv)
                  Just input ->
                    do case parseComm input of
                         Exit -> return ()
-                        (ParseError error) -> do outputStrLn error
-                                                 loop env
+                        (ParseError err) -> do outputStrLn err
+                                               loop env
                         x    -> do case (eval x env) of
                                     (Left err, env') -> do outputStrLn (showError err)
                                                            loop env'
@@ -74,13 +63,13 @@ readFromFile (x:xs) env = case x of
                           line -> do case parseComm (cleanLine line) of
                                        Exit -> do showEnv env
                                                   return ()
-                                       (ParseError error) -> do putStr error
-                                                                return ()
-                                       x    -> do case (eval x env) of
-                                                   (Left err, env') -> do putStr (showError err)
+                                       (ParseError err) -> do putStr err
+                                                              return ()
+                                       y    -> do case (eval y env) of
+                                                   (Left err, _) -> do putStr (showError err)
                                                    (Right s, env') ->  do case s of
                                                                              "" -> readFromFile xs env'
-                                                                             ss -> do readFromFile xs env'
+                                                                             _  -> readFromFile xs env'
 
 cleanLine :: String -> String
 cleanLine line = if last line == '\n' || last line == '\r' then init line else line
@@ -88,4 +77,4 @@ cleanLine line = if last line == '\n' || last line == '\r' then init line else l
 parseComm :: String -> Comm
 parseComm contents = case func $ lexerComm contents of
                        Okey ast -> ast
-                       Failed error -> ParseError error
+                       Failed err -> ParseError err

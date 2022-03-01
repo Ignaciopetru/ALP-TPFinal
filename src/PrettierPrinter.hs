@@ -8,28 +8,28 @@ import qualified Data.Map               as M
 type Env = (M.Map Nombre (Lista -> Lista), (M.Map Nombre [Integer]))
 
 instance Show Lista where
-  show (ListaNat ls) = ""
-  show (Sl ls)= "Si"
-  show (Sr ls)= "Sd"
-  show (Dl ls)= "Di"
-  show (Dr ls)= "Dd"
-  show (Ol ls)= "Oi"
-  show (Or ls)= "Od"
-  show (Ml ls)= "Mi"
-  show (Mr ls)= "Md"
-  show (DDl ls)= "DDi"
-  show (DDr ls)= "DDd"
-  show (Int ls)= "Int"
-  show (Rep fun ls)= "<" ++ showFun fun ++ ">"
+  show (ListaNat _) = ""
+  show (Sl _)= "Si"
+  show (Sr _)= "Sd"
+  show (Dl _)= "Di"
+  show (Dr _)= "Dd"
+  show (Ol _)= "Oi"
+  show (Or _)= "Od"
+  show (Ml _)= "Mi"
+  show (Mr _)= "Md"
+  show (DDl _)= "DDi"
+  show (DDr _)= "DDd"
+  show (Int _)= "Int"
+  show (Rep fun _)= "<" ++ showFun fun ++ ">"
   show (Variable a) = "Var " ++ a
-  show (Funcion a ls) = a
+  show (Funcion a _) = a
 
 -- Se evalua la funcion en una lista para poder recorrerla e impimirla.
 showFun :: (Lista -> Lista) -> String
 showFun fun = intercalate " " (map (\x-> show x) (showFun' (fun (ListaNat []))))
 
 showFun' :: Lista -> [Lista]
-showFun' (ListaNat ls) = []
+showFun' (ListaNat _) = []
 showFun' (Sl ls) = showFun' ls ++ [Sl (ListaNat [])]
 showFun' (Sr ls) = showFun' ls ++ [Sr (ListaNat [])]
 showFun' (Dl ls) = showFun' ls ++ [Dl (ListaNat [])]
@@ -52,7 +52,7 @@ showError :: Error -> String
 showError OperOverEmpty     = "\nError: Funcion de lista aplicada sobre lista vacia (fuera de dominio de funcion)\n"
 showError (UndefVar v)      = "\nWarning: Variable " ++ v ++ " indefinida\n"
 showError (UndefFun v)      = "\nWarning: Funcion " ++ v ++ " indefinida\n"
-showError (UndefFunOrVar v) = "\nWarning: No se encontró funcion o variable definida: " ++ v ++ "\n"
+showError (UndefFunOrVar v) = "\nWarning: No se encontró funcion no base o variable definida: " ++ v ++ "\n"
 showError RepOutDomain   = "\nError: Repetición aplicada a una lista de menos de 2 elementos\n"
 
 showFunVar :: PrintDef -> String
