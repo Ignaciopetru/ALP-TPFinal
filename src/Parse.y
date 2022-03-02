@@ -26,6 +26,7 @@ import Data.List
     '>'         { TRepR }
     '['         { TBracketL }
     ']'         { TBracketR }
+    ','         { TComa }
     Nat         { TNat $$ }
     Var         { TVar $$ }
     '='         { TEqual }
@@ -113,6 +114,7 @@ data Token =  TOR
             | TRepR
             | TBracketR
             | TBracketL
+            | TComa
             | TNat Integer
             | TVar String
             | TEqual
@@ -174,7 +176,7 @@ reverseVarList x = let tokenList = lexer' x
 reverseFunList :: String -> [Token]
 reverseFunList x = reversePredicate (lexer' x, [])
 
--- Lexer sin tener en cuenta la realizacion de reverse.
+-- Lexer sin tener en cuenta la realizacion del reverse.
 lexer' :: String -> [Token]
 lexer' [] = []
 lexer' cs@(c:cc) | isSpace c = lexer' cc

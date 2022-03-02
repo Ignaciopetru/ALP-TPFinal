@@ -1,4 +1,4 @@
-module PrettierPrinter where
+module PPrinter where
 
 import Common
 import Data.List
