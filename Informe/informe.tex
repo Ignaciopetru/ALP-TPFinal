@@ -1,0 +1,381 @@
+\documentclass[a4paper,13pt,proof]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc} %
+\usepackage{FiraMono}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{amsmath,amssymb,amsthm,textcomp}
+\usepackage{enumerate}
+\usepackage{siunitx}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pdflscape}
+\usepackage[spanish]{babel}
+\usepackage{lscape}
+\usepackage{proof}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{sectsty}
+\usepackage{lipsum}
+\usepackage[shortlabels]{enumitem}
+\setlist[enumerate]{itemsep=0mm}
+\usepackage{float}
+\geometry{left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+\newcommand\myshade{85}
+\colorlet{mylinkcolor}{blue}
+\colorlet{mycitecolor}{blue}
+\colorlet{myurlcolor}{blue}
+
+
+\usepackage{svg}
+\usepackage{amsmath} % you need amsmath as the demo includes a use of \eqref
+
+\makeatletter
+\newcommand{\verbatimfont}[1]{\def\verbatim@font{#1}}%
+\makeatother
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\linia\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{ALP - FRL}
+\cfoot{}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}%
+
+\hypersetup{
+  linkcolor  = mylinkcolor!\myshade!black,
+  citecolor  = mycitecolor!\myshade!black,
+  urlcolor   = myurlcolor!\myshade!black,
+  colorlinks = true,
+}
+\linespread{1.3}
+
+
+%
+% code listing settings
+\usepackage{listings}
+\makeatletter
+\lst@InstallKeywords k{attributes}{attributestyle}\slshape{attributestyle}{}ld
+\makeatother
+\lstset{
+    language=haskell,
+    basicstyle=\ttfamily\footnotesize,
+    aboveskip={1.0\baselineskip},
+    belowskip={1.0\baselineskip},
+    columns=fixed,
+    extendedchars=true,
+    breaklines=true,
+    tabsize=4,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=lines,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    linewidth=454,
+    keywordstyle=\color[rgb]{0.627,0.126,0.941},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{01,0,0},
+    numbers=left,
+    numberstyle=\small,
+    stepnumber=1,
+    numbersep=10pt,
+    captionpos=t,
+    escapeinside={(*@}{@*)},
+    morekeywords={Nat, ListN},
+    moreattributes={tDos, mapUno, sumUnoLista, mapPos, ackInt, ack, succ},
+    attributestyle = \color[rgb]{0.945,0.678,0.149}
+}
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{csquotes}
+
+\usepackage{verbatimbox}
+
+\sectionfont{\fontsize{22}{26}\selectfont}
+\subsectionfont{\fontsize{19}{23}\selectfont}
+\subsubsectionfont{\fontsize{15}{19}\selectfont}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\includegraphics[width=0.2\textwidth]{logo-unr.png}\par}
+\vspace{1cm}
+{\bfseries\LARGE Universidad Nacional de Rosario \par}
+\vspace{1cm}
+{\scshape\Large Facultad de ciencias exactas, ingeniería y agrimensura \par}
+\vspace{3cm}
+{\scshape\Huge Análisis de Lenguajes de Programación \par}
+\vspace{3cm}
+{\itshape\Large Trabajo pr\'actico Final \par}
+\vfill
+{\Large Alumno: \par}
+{\Large Petruskevicius Ignacio\par}
+\vfill
+{\Large Marzo 2022 \par}
+\end{titlepage}
+
+
+\title{ALP - Informe TP Final}
+
+\author{Petruskevicius Ignacio, LCC UNR FCEIA}
+
+\date{02/03/2022}
+
+\maketitle
+
+
+\section{Introducción}
+
+
+Ante la propuesta del trabajo práctico y teniendo en cuenta que el tema a escoger debía ser coherente, comencé a pensar posibilidades. Entre las ideas que surgieron una fue tener en cuenta algún tema que se haya dado en la carrera y hubiera estado bueno poder complementarlo con una herramienta. Remontándome a el primer cuatrimestre de $2^{do}$ año, específicamente la materia de Lenguajes Formales y Computabilidad, encontré el tópico Funciones Recursivas de Listas. Repasando, recordé que en la práctica se pedía confeccionar funciones que cumplan con especificaciones dadas, pero las cuales eran difíciles de corroborar dada su complejidad. Por lo tanto una herramienta que permita realizar tests de manera mas simple podría ayudar al estudiante.
+
+
+\section{Nociones teóricas sobre FRL}
+
+\textbf{Definición:} Una lista es una secuencia ordenada y finita de cero o más elementos de $\mathbb{N}_0$.
+
+\textbf{Definición:} Las funciones de listas son funciones que van del conjunto de las listas en el conjunto de las listas.
+
+Sobre las listas, se definen funciones base de las cuales surgen otras aplicando la composición de funciones. Estas son:
+
+\begin{itemize}
+    \item Cero a izquierda: $O_i [x_1, x_2, . . . , x_k ] = [0, x_1, x_2, . . . , x_k ]$
+    \item Cero a derecha: $O_d [x_1, x_2, . . . , x_k ] = [x_1, x_2, . . . , x_k , 0]$
+    \item Borrar a izquierda: $D_i [x_1, x_2, . . . , x_k ] = [x_2, x_3, . . . , x_k ]$
+    \item Borrar a derecha: $D_d [x_1, x_2, . . . , x_k ] = [x_1, x_2, . . . , x_k−1]$
+    \item Sucesor a izquierda: $S_i [x_1, x_2, . . . , x_k ] = [x_1 + 1, x_2, . . . , x_k ]$
+    \item Sucesor a derecha: $S_d [x_1, x_2, . . . , x_k ] = [x_1, x_2, . . . , x_k + 1]$
+    \item Operador repetición:
+    <F> = $\left\{ \begin{array}{lcc}
+             [x, Y , z] &   si  & x == z \\
+             \\ F[x, Y , z] &  si &x \not = z \\
+             \end{array}
+   \right.$
+\end{itemize}
+ 
+ Además de esas funciones base, nos son de interes las siguientes funciones derivadas:
+ 
+ \begin{itemize}
+    \item Mover a izquierda: $M_i [x_1, x_2, . . . , x_k ] = [ x_k,x_1, x_2, . . . , x_{k-1} ]$
+    \item Mover a derecha: $M_d [x_1, x_2, . . . , x_k ] = [ x_2, . . . , x_k , x_1]$
+    \item Duplicar a izquierda: $DD_i [x_1, x_2, . . . , x_k ] = [x_1,x_1, x_2, x_3, . . . , x_k ]$
+    \item Duplicar a derecha: $DD_d [x_1, x_2, . . . , x_k ] = [x_1, x_2, . . . , x_k, x_k]$
+    \item Intercambiar extremos: $INT [x_1, x_2, . . . , x_k ] = [x_k, x_2, . . . ,x_1  ]$
+\end{itemize}
+ 
+Notese que la composición natural de funciones es de la siguiente forma: $F \circ G [x] = F(G[x]) $, pero esto dificulta la escritura puesto que tenemos que leer de izquierda a derecha la ``ejecución'' de funciones. Por lo tanto se redefine la composición:  $F \circ G [x] = G(F[x]) $.
+
+\section{Descripción}
+
+Se desarrolló un \textbf{EDSL} el cual permite construir dos tipos de elementos, funciones y listas (a veces derivadas de la aplicación de funciones (primitivas o no)). Estas listas al ser declaradas, en caso de estar formadas por la aplicación de funciones, se las evalúa y se almacena el resultado. Por lo tanto luego podremos observar el estado final de las listas con un comando.
+
+La entrada puede ser por consola o por un archivo de texto con la sintaxis que luego veremos.
+Se implementaron las funciones atómicas de las \textbf{FRL} y además algunas derivadas como mover izquierda, duplicar o intercambiar, las cuales son comúnmente utilizadas.
+
+\section{Instalación y uso}
+\noindent
+Para dejar listo para usar el \textbf{EDSL} se deben ejecutar los siguientes comandos:
+
+\begin{verbatim}
+  $ stack setup
+  $ stack build
+\end{verbatim}
+\noindent
+Luego se puede ejecutar de dos maneras dependiendo de el modo de uso que se le quiera dar.
+\noindent
+Para utilizarlo como consola:
+
+\begin{verbatim}
+  $ stack exec FRL-exe
+\end{verbatim}
+\noindent
+Para leer un archivo con extensión .frl:
+
+\begin{verbatim}
+  $ stack exec FRL-exe "path/file.frl"
+\end{verbatim}
+
+Cada linea ingresada ya sea por consola o en el archivos es parseada como un comando. Los comandos validos son los siguientes:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Comando        & Función                                                                           \\ \hline
+Fun var = decl & Declaración de una función con el nombre dado                                     \\ \hline
+Var var = decl & Declaración de una variable que almacena una lista                                \\ \hline
+Print var      & Imprime en pantalla el valor asociado a una función o variable con el nombre dado \\ \hline
+Exit           & Termina la ejecución.                                                             \\ \hline
+\end{tabular}
+\end{table}
+
+La decl (declaración) se construye utilizando las siguientes funciones base definidas y además concatenando nombres de variables o funciones.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\multicolumn{1}{|c|}{}     & Función               \\ \hline
+Si                         & Sucesor izquierda     \\ \hline
+Sd                         & Sucesor derecha       \\ \hline
+Oi                         & Cero a izquierda      \\ \hline
+Od                         & Cero a derecha        \\ \hline
+Di                         & Eliminar izquierda    \\ \hline
+Dd                         & Eliminar derecha      \\ \hline
+Mi                         & Mover izquierda       \\ \hline
+Md                         & Mover derecha         \\ \hline
+DDi                        & Duplicar izquierda    \\ \hline
+DDd                        & Duplicar derecha      \\ \hline
+INT                        & Intercambiar extremos \\ \hline
+\textless{}F\textgreater{} & Operador repetición   \\ \hline
+\end{tabular}
+\end{table}
+
+Ejemplos de declaraciones de variables y funciones:
+
+\begin{verbatim}
+    Var nombre = Si Si [1,2]
+    Var lista = [1,2]
+    Fun funcion1 = Si Si
+    Var nombre2 = funcion1 lista
+\end{verbatim}
+
+Tenga en cuenta que cada utilización de función o variable está ligada a que tenga sentido, es decir, si se ingresa un nombre de variable en la ultima posición de una declaración de función, esta debe ser una función.
+
+Para evitar errores de parseo escribir los operadores separados por un espacio, ejemplo Oi Si Od.
+
+\subsection{Aclaraciones}
+
+En modo lectura de archivos no se puede imprimir, ya que al final de la ejecución se muestra el estado final de cada variable y función declarada.
+
+Existe un espacio de nombres distinto para las funciones y para las variables, es decir que una función puede llevar el mismo nombre que una variable. Por eso el comando \textbf{Print} puede imprimir una función y una variable a la vez. Por otro lado, se infiere el tipo de una variable escrita en una declaración mediante la posición y utilización de la misma.
+
+Ejemplos de comandos:
+
+\begin{verbatim}
+    $ Var a = [1,2,3]
+    $ Print a
+    [1,2,3]
+    $ Fun hola = Oi Si
+    $ Print hola
+    Oi Si
+    $ Var b = hola Oi a
+    $ Print b
+    [0, 1, 1, 2, 3]
+\end{verbatim}
+
+Se adjuntan más ejemplos en la carpeta \textbf{test}.
+
+
+\section{Implementación}
+
+\subsection{Estructura}
+
+El código relevante se encuentra en \textbf{app/main.hs}, \textbf{src/eval.hs}, \textbf{src/parse.y}, \textbf{src/common.hs}, \textbf{src/PPrinter.hs} y \textbf{src/monads.hs}.
+
+
+En el primero se encuentra la lógica de ejecución de la interfaz por consola y la lectura de archivos si se pasa este como argumento.
+\noindent
+En \textbf{src/common.hs} se definen todos los tipos de datos utilizados, en particular \textbf{Lista} el cual es el AST que representa tanto a las listas como a las funciones de lista.
+\noindent
+\textbf{src/parser.y} es el archivo de Happy, herramienta utilizado para parsear la entrada.
+\noindent
+En \textbf{src/eval.hs} se realiza la evaluación de un comando, de la cual se hablará mas adelante. Y por ultimo, en \textbf{src/PrettierPrinter.hs} se definen funciones que permiten mostrar por pantalla de manera intuitiva las variables y funciones definidas.
+
+
+\subsection{Parseo}
+
+Como se comentó, se utilizo Happy para crear un parser para comandos. Para hacer esto se define la gramática del lenguaje aceptado además de una función encargada de tokenizar la entrada. Me gustaría hablar un poco de esta ultima ya que como se vio en el apartado de Nociones teóricas, la aplicación de funciones se realiza de izquierda a derecha. Lo cual complica la creación del AST que luego será evaluado, ya que si construimos el árbol a medida que se lee la entrada, la función de más a la izquierda quedará mas arriba en el AST y por lo tanto se aplicará ultima, contrario a lo que se quiere. Por lo tanto para solucionar este inconveniente decidí invertir el orden de la lista de tokens leída antes de que se ejecute el parser, entonces el árbol se construirá de la forma querida. Esta inversión no se puede realizar sobre el completo de los tokens, ya que esto puede generar cadenas invalidas según la gramática dada. Por lo tanto se tienen en cuenta 2 escenarios, cuando se declaran funciones o cuando se declaran variables. En el primer caso, podemos dar vuelta todo menos los < > del operador repetición. En cambio en el caso de variables sabemos que al final se debe encontrar una lista, ya sea explicita ($[1,2,3]$) o una variable, la cual debe preservar su posición. Entonces se evalúa cada caso y se invierte la posición según corresponda.
+
+\subsection{Tipos de datos}
+
+Dados los comandos que se implementaron, a su vez se declaró un tipo de datos para representar cada uno. Y también un tipo de datos para representar una lista. Esta puede ser directamente una lista de naturales o una secuencia de aplicaciones de distintos operadores unarios. Por lo tanto el árbol que representa a la lista resulta ser parecido a una lista simplemente enlazada. Solo el operador repetición toma 2 argumentos, una función que toma una lista y devuelve otra, la cual se representa utilizando las funciones de Haskell.
+
+Por otro lado se definieron varios tipos de datos para representar errores tanto de evaluación como parseo.
+
+\subsection{Evaluación}
+
+La idea general del \textbf{EDSL} planteado es declarar funciones y variables que pueden ser utilizadas múltiples veces para definir las \textbf{FRL} que se quiera. Por lo tanto es importante contar con un entorno en el cual estas declaraciones de almacenen y se puedan consultar. Por otro lado, dadas las definiciones de los operadores vistas en la sección de noción teórica, vemos que no todos se pueden aplicar sobre cualquier lista. Por ejemplo, no podemos hacer $S_i []$ ya que no hay elemento al cual sumarle 1. Es por esto que es necesario que se puedan arrojar errores durante la evaluación. 
+
+Por este motivo se definió un par de monadas, una encargada de mantener el entorno y otra de los errores. Esta última es similar a la usada en previos trabajos prácticos de la materia. En cuanto a la primera, se definió un entorno (Env) el cual posee dos mapas, uno en donde se almacenan las variables y otro para las funciones, por lo tanto fue necesario poder actualizar y observar cada uno de manera independiente.
+\begin{verbatim}
+    type Env = (M.Map Nombre (Lista -> Lista), (M.Map Nombre [Integer]))
+\end{verbatim}
+
+Los posibles errores que pueden ocurrir son de 2 tipos, los relacionados con el dominio de las funciones y los que pueden estar presentes a la hora de buscar variables o funciones a imprimir o utilizar en otra definición.
+
+Como se explicó previamente se implementó funciones derivadas de las bases, a la hora de evaluarlas estas se traducen en base a las funciones base y se las evalúa.
+
+\subsection{Print}
+
+Como se vió, en el entorno las funciones se almacenan como funciones de Haskell, es decir que no se puede mostrarlas así como así, sino que se debe definir una manera de hacerlo. En mi caso elegí evaluar estas funciones con una lista vacía que luego no seria impresa. Por lo tanto puedo mostrar todos los operadores aplicados. Por otro lado, como también se vió, la composición de funciones funciona al revés de lo comúnmente utilizado. Por lo tanto el primer elemento de la función (primer elemento del AST una vez que se la evalúa) debe ser el ultimo en imprimirse. Por esto se recorrer el árbol de manera inversa.
+
+
+\section{Mejoras posibles}
+
+Entre las mejoras que se pueden implementar encontramos:
+
+\begin{itemize}
+    \item Especificación de los mensajes de error tanto de parseo como de evaluación, brindando una explicación del error puntual.
+    \item Agregar potencia de una función, se aplica x veces una función dada.
+    \item Añadir más comandos de inspección de funciones, como por ejemplo analizar el dominio de una función dada. Esto requiere además de un trabajo de implementación en Haskell, un trabajo de investigación teoría sobre algoritmos para calcularlo.
+    \item Cargar de archivos para poder seguir trabajando sobre las funciones y variables que se declaró.
+\end{itemize}
+
+
+\section{Bibliografía}
+
+Para la parte teórica de \textbf{FRL} se utilizó el material dado en la materia de Lenguajes Formales y Computabilidad, del segundo año de la carrera.
+
+Para escribir el código:
+
+\begin{itemize}
+    \item TPs dados en la materia, y material de la misma.
+    \item Documentación Happy.
+    \item Para la interfaz de usuario System Console Haskeline.
+\end{itemize}
+
+\end{document}
