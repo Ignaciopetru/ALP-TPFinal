@@ -1,5 +1,4 @@
 module Common where
-import Data.List
 
 data Comm = Fun Nombre Funcion 
           | Var Nombre Lista

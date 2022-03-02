@@ -2,7 +2,7 @@ module Eval where
 
 import           Common
 import           Monads
-import           PrettierPrinter
+import           PPrinter
 import qualified Data.Map.Strict               as M
 import           Data.Maybe
 import           Data.Tuple
@@ -14,6 +14,7 @@ import           Control.Monad                  ( liftM
                                                 , ap
                                                 )
 
+--Env definido en PPrint.
 -- Entorno nulo
 initEnv :: Env
 initEnv = (M.empty, M.empty)
@@ -93,7 +94,6 @@ evalLista (Dl ls)           = do lsE <- evalLista ls
 evalLista (Dr ls)           = do lsE <- evalLista ls
                                  if (lsE == []) then throw OperOverEmpty
                                  else return (init lsE)
-evalLista (Int ls)          = evalLista (Mr (Dl (Dr (Rep (\x ->  (Ml (Ml (Sl (Mr (Mr (Sl x))))))) (Ol (Ml (Ol (Mr ls))))))))
 evalLista (Rep fun ls)      = do lsE <- evalLista ls
                                  if length lsE < 2 then throw RepOutDomain
                                  else if ((last lsE) == (head lsE)) then return lsE
@@ -103,6 +103,8 @@ evalLista (Ml ls)           = evalLista (Dr ((Rep (\x -> Sl x) (Ol ls))))
 evalLista (Mr ls)           = evalLista (Dl ((Rep (\x -> Sr x) (Or ls))))
 evalLista (DDl ls)          = evalLista (Ml ((Rep (\x -> Sr x) (Or ls))))
 evalLista (DDr ls)          = evalLista (Mr ((Rep (\x -> Sl x) (Ol ls))))
+evalLista (Int ls)          = evalLista (Mr (Dl (Dr (Rep (\x ->  (Ml (Ml (Sl (Mr (Mr (Sl x))))))) (Ol (Ml (Ol (Mr ls))))))))
+--
 evalLista (Funcion name ls) = do fun <- lookforFun name 
                                  (evalLista (fun ls))
 evalLista (Variable name)   = lookforVar name

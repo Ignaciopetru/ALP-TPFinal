@@ -26,7 +26,6 @@ import Data.List
     '>'         { TRepR }
     '['         { TBracketL }
     ']'         { TBracketR }
-    ','         { TComa }
     Nat         { TNat $$ }
     Var         { TVar $$ }
     '='         { TEqual }
@@ -34,11 +33,9 @@ import Data.List
     Funcion     { TFuncion }
     Variable    { TVariable }
     Print       { TPrint }
-    CError      { TCarError }
+    -- Tokens que simbolizan errores de parseo.
+    CarError    { TCarError }
     CommError   { TCommError }
-
-%right '<' '>'
-%right Oi Od Si Sd Di Dd
 
 %%
 
@@ -116,7 +113,6 @@ data Token =  TOR
             | TRepR
             | TBracketR
             | TBracketL
-            | TComa
             | TNat Integer
             | TVar String
             | TEqual
@@ -140,11 +136,11 @@ lexerComm :: String -> [Token]
 lexerComm [] = []
 lexerComm cs@(c:cc) | isSpace c = lexerComm cc
                     | otherwise = case span isAlphaNum cs of
-                                       ("Exit", rest) -> TExit : lexerFun rest
-                                       ("Fun", rest) -> TFuncion : lexerFun rest
-                                       ("Var", rest) -> TVariable : lexerVar rest
-                                       ("Print", rest) -> TPrint : lexerVar rest
-                                       otherwise -> [TCommError]
+                                       ("Exit", rest)  -> TExit     : lexerFun rest
+                                       ("Fun", rest)   -> TFuncion  : lexerFun rest
+                                       ("Var", rest)   -> TVariable : lexerVar rest
+                                       ("Print", rest) -> TPrint    : lexerVar rest
+                                       otherwise       -> [TCommError]
 
 -- lexer variable
 lexerVar :: String -> [Token]
@@ -163,21 +159,22 @@ lexerFun cs@(c:cc) | isSpace c = lexerFun cc
                                        ("", rest) -> [TCarError]
                                        (v, rest) -> TVar v : lexerFun rest
 
--- Da vuelta la lista del fst respetando <> y concatena
+-- Da vuelta la lista del fst respetando <> y concatena con la lista snd.
 reversePredicate :: ([Token], [Token]) -> [Token]
 reversePredicate (operators, list) = map (\x -> if (x /= TRepL && x /= TRepR) then x else (if x == TRepL then TRepR else TRepL)) (reverse operators) ++ list
 
 -- Al declararse una variable, la lista de elementos sobre los cuales operar o ultima variable sobre la que se opera no deben invertirse.
 reverseVarList :: String -> [Token]
 reverseVarList x = let tokenList = lexer' x
-                  in case (TBracketL `elem` tokenList) of
-                          True -> reversePredicate (span (\z -> z /= TBracketL) tokenList)
-                          False -> reversePredicate ((init tokenList), [last tokenList])
+                   in case (TBracketL `elem` tokenList) of
+                           True -> reversePredicate (span (\z -> z /= TBracketL) tokenList)
+                           False -> reversePredicate ((init tokenList), [last tokenList])
 
 -- Al ser funcion, todos los operadores tienen que ser invertidos.
 reverseFunList :: String -> [Token]
 reverseFunList x = reversePredicate (lexer' x, [])
 
+-- Lexer sin tener en cuenta la realizacion de reverse.
 lexer' :: String -> [Token]
 lexer' [] = []
 lexer' cs@(c:cc) | isSpace c = lexer' cc

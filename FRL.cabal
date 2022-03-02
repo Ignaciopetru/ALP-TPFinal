@@ -29,7 +29,7 @@ library
       Eval
       Monads
       Parse
-      PrettierPrinter
+      PPrinter
   other-modules:
       Paths_FRL
   hs-source-dirs:

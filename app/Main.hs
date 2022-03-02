@@ -10,7 +10,7 @@ import           System.Environment
 import           Common
 import           Parse
 import           Eval
-import           PrettierPrinter
+import           PPrinter
 
 ---------------------
 --- Interpreter
@@ -76,5 +76,5 @@ cleanLine line = if last line == '\n' || last line == '\r' then init line else l
 
 parseComm :: String -> Comm
 parseComm contents = case func $ lexerComm contents of
-                       Okey ast -> ast
+                       Okey ast   -> ast
                        Failed err -> ParseError err
